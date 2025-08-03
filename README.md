@@ -1,4 +1,4 @@
-# 🐱🐶 Dog vs Cat Image Classifier
+#  Dog vs Cat Image Classifier
 
 This project is a simple image classification app that predicts whether an uploaded image is of a **dog** or a **cat**, using traditional machine learning techniques (not deep learning). It includes both:
 
