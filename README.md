@@ -5,6 +5,7 @@ This project is a simple image classification app that predicts whether an uploa
 - A **Flask API** (`api.py`) for serving predictions
 - A **Streamlit UI** (`streamlit_app.py`) for interactive user input
 
+locust Report: https://docs.google.com/document/d/1fCrNrGn-qfE9UVK3dJK2qR98M1K-02eTcE7CqyFaEvI/edit?usp=sharing
 ---
 
 ## 📦 Project Structure
