@@ -1,60 +1,29 @@
-import streamlit as st
-import numpy as np
-from PIL import Image
-import joblib
-import cv2
+import os
+import random
+from locust import HttpUser, task, between
 
-# Load model and scaler
-@st.cache_resource
-def load_model():
-    try:
-        model = joblib.load('../models/dog_cat_model.pkl')
-        scaler = joblib.load('../models/scaler.pkl')
-        return model, scaler
-    except Exception as e:
-        st.error(f"❌ Could not load model or scaler: {e}")
-        return None, None
+class ImagePredictionUser(HttpUser):
+    wait_time = between(1, 3)  # wait between 1 to 3 seconds between tasks
 
-model, scaler = load_model()
-
-# Feature extraction function
-def extract_features(image):
-    img_resized = cv2.resize(image, (64, 64))
-    gray = cv2.cvtColor(img_resized, cv2.COLOR_RGB2GRAY)
-    return gray.flatten()
-
-# App UI
-st.set_page_config(page_title="Dog vs Cat Classifier", page_icon="🐶🐱")
-st.title("🐶🐱 Dog vs Cat Classifier (Scikit-learn)")
-st.markdown("""
-This app uses a **traditional ML model** trained on flattened grayscale image pixels.<br>
-Upload an image of a dog or a cat to see the prediction.
-""", unsafe_allow_html=True)
-
-uploaded_file = st.file_uploader("📁 Upload an image", type=["jpg", "jpeg", "png"])
-
-if uploaded_file is not None:
-    image = Image.open(uploaded_file).convert('RGB')
-    st.image(image, caption="Uploaded Image", use_container_width=True)
-
-    # Convert and extract features
-    img_np = np.array(image)
-    features = extract_features(img_np)
-
-    if model is not None and scaler is not None:
+    def on_start(self):
+        # Folder where test images are stored
+        self.image_folder = "sample_images"
         try:
-            features_scaled = scaler.transform(features.reshape(1, -1))
-            prediction = model.predict(features_scaled)[0]
-            confidence = model.predict_proba(features_scaled)[0]
+            self.image_files = [f for f in os.listdir(self.image_folder) if f.lower().endswith(('.jpg', '.jpeg', '.png'))]
+            if not self.image_files:
+                print(f"⚠️ No images found in folder '{self.image_folder}' for load testing.")
+        except FileNotFoundError:
+            print(f"❌ Folder '{self.image_folder}' does not exist. Please create it and add images.")
+            self.image_files = []
 
-            if prediction == 1:
-                st.success(f"🐶 It's a **DOG** with {confidence[1]:.2%} confidence!")
-            else:
-                st.success(f"🐱 It's a **CAT** with {confidence[0]:.2%} confidence!")
+    @task
+    def predict_image(self):
+        if not self.image_files:
+            return  # Skip task if no images
 
-            st.info(f"Extracted {features.shape[0]} features from the image.")
+        image_name = random.choice(self.image_files)
+        image_path = os.path.join(self.image_folder, image_name)
 
-        except Exception as e:
-            st.error(f"❌ Error during prediction: {e}")
-    else:
-        st.warning("Model not loaded correctly.")
+        with open(image_path, "rb") as img_file:
+            files = {"file": (image_name, img_file, "image/jpeg")}
+            self.client.post("/predict", files=files)
