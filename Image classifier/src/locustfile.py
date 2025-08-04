@@ -3,13 +3,13 @@ import random
 from locust import HttpUser, task, between
 
 class CatDogUser(HttpUser):
-    wait_time = between(1, 3)  # Simulate 1–3 second delay between requests
+    host = "http://localhost:8000"  # <-- Add this!
+    wait_time = between(1, 3)
 
     @task
     def predict_image(self):
         image_folder = os.path.join(os.path.dirname(__file__), "sample_images")
 
-        # Validate image folder
         if not os.path.exists(image_folder):
             print(f"❌ Folder does not exist: {image_folder}")
             return

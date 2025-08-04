@@ -18,7 +18,7 @@ except Exception as e:
 
 def extract_features(image):
     """Simple flattening to match model expectations (4096 features)"""
-    img_resized = cv2.resize(image, (64, 64))
+    img_resized = cv2.resize(image, (32, 32))
     gray = cv2.cvtColor(img_resized, cv2.COLOR_RGB2GRAY)
     return gray.flatten()
 

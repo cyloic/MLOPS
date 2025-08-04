@@ -1,0 +1,7 @@
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+# Ignore retrain image data folders
+Image classifier/src/retrain_images/
+Image classifier/src/retrain_data/
