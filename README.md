@@ -69,7 +69,8 @@ Load testing with Locust
 
 1. Clone the Repository
    
-git clone https://github.com/cyloic/MLOPS.git
+git clone: https://github.com/cyloic/MLOPS.git
+
 cd MLOPS
 
 2. Install Dependencies
