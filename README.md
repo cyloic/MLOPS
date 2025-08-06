@@ -89,7 +89,7 @@ joblib
 ##Model Information
 
 The model was trained using:
-Resized 64x64 RGB images
+Resized 32x32 RGB images
 
 Handcrafted features including:
 RGB histograms
